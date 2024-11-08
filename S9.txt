@@ -1,0 +1,143 @@
+mysql> create database s9;
+Query OK, 1 row affected (0.01 sec)
+
+mysql> use s9
+Database changed
+mysql> CREATE TABLE CUSTOMERS (
+    ->     CNo INT PRIMARY KEY,
+    ->     Cname VARCHAR(100),
+    ->     Ccity VARCHAR(100),
+    ->     CMobile VARCHAR(15)
+    -> );
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> CREATE TABLE ITEMS (
+    ->     INo INT PRIMARY KEY,
+    ->     Iname VARCHAR(100),
+    ->     Itype VARCHAR(100),
+    ->     Iprice DECIMAL(10, 2),
+    ->     Icount INT
+    -> );
+Query OK, 0 rows affected (0.02 sec)
+
+
+mysql> CREATE TABLE PURCHASE (
+    ->     PNo INT PRIMARY KEY,
+    ->     Pdate DATE,
+    ->     Pquantity INT,
+    ->     Cno INT,
+    ->     INo INT,
+    ->     FOREIGN KEY (Cno) REFERENCES CUSTOMERS(CNo),
+    ->     FOREIGN KEY (INo) REFERENCES ITEMS(INo)
+    -> );
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> INSERT INTO CUSTOMERS (CNo, Cname, Ccity, CMobile) VALUES
+    -> (1, 'Gopal', 'Delhi', '1234567890'),
+    -> (2, 'Maya', 'Mumbai', '9876543210'),
+    -> (3, 'Ravi', 'Delhi', '1112223333'),
+    -> (4, 'Kiran', 'Bangalore', '4445556666');
+Query OK, 4 rows affected (0.00 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO ITEMS (INo, Iname, Itype, Iprice, Icount) VALUES
+    -> (101, 'Notebook', 'Stationary', 500.00, 20),
+    -> (102, 'Pen', 'Stationary', 50.00, 100),
+    -> (103, 'Laptop', 'Electronics', 1500.00, 15),
+    -> (104, 'Eraser', 'Stationary', 20.00, 50),
+    -> (105, 'Monitor', 'Electronics', 800.00, 10),
+    -> (106, 'Stapler', 'Stationary', 250.00, 30);
+Query OK, 6 rows affected (0.01 sec)
+Records: 6  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO PURCHASE (PNo, Pdate, Pquantity, Cno, INo) VALUES
+    -> (1, '2024-11-01', 2, 1, 101),
+    -> (2, '2024-11-02', 5, 2, 102),
+    -> (3, '2024-11-03', 1, 3, 103),
+    -> (4, '2024-11-04', 3, 1, 106),
+    -> (5, '2024-11-05', 2, 4, 105);
+Query OK, 5 rows affected (0.01 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> SELECT Iname, Iprice
+    -> FROM ITEMS
+    -> WHERE Itype = 'Stationary' AND Iprice BETWEEN 400 AND 1000;
++----------+--------+
+| Iname    | Iprice |
++----------+--------+
+| Notebook | 500.00 |
++----------+--------+
+1 row in set (0.00 sec)
+
+mysql> UPDATE CUSTOMERS
+    -> SET CMobile = '9998887777'
+    -> WHERE Cname = 'Gopal';
+Query OK, 1 row affected (0.01 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> SELECT Iname, Iprice
+    -> FROM ITEMS
+    -> ORDER BY Iprice DESC
+    -> LIMIT 1;
++--------+---------+
+| Iname  | Iprice  |
++--------+---------+
+| Laptop | 1500.00 |
++--------+---------+
+1 row in set (0.00 sec)
+
+mysql> SELECT PNo, Pdate, Pquantity, Cno, INo
+    -> FROM PURCHASE
+    -> ORDER BY Pdate DESC;
++-----+------------+-----------+------+------+
+| PNo | Pdate      | Pquantity | Cno  | INo  |
++-----+------------+-----------+------+------+
+|   5 | 2024-11-05 |         2 |    4 |  105 |
+|   4 | 2024-11-04 |         3 |    1 |  106 |
+|   3 | 2024-11-03 |         1 |    3 |  103 |
+|   2 | 2024-11-02 |         5 |    2 |  102 |
+|   1 | 2024-11-01 |         2 |    1 |  101 |
++-----+------------+-----------+------+------+
+5 rows in set (0.00 sec)
+
+mysql> SELECT Ccity, COUNT(*) AS Customer_Count
+    -> FROM CUSTOMERS
+    -> GROUP BY Ccity;
++-----------+----------------+
+| Ccity     | Customer_Count |
++-----------+----------------+
+| Delhi     |              2 |
+| Mumbai    |              1 |
+| Bangalore |              1 |
++-----------+----------------+
+3 rows in set (0.00 sec)
+
+mysql> SELECT I.Iname, P.Pquantity
+    -> FROM PURCHASE P
+    -> JOIN ITEMS I ON P.INo = I.INo
+    -> JOIN CUSTOMERS C ON P.Cno = C.CNo
+    -> WHERE C.Cname = 'Maya';
++-------+-----------+
+| Iname | Pquantity |
++-------+-----------+
+| Pen   |         5 |
++-------+-----------+
+1 row in set (0.00 sec)
+
+mysql> CREATE VIEW View_Stationary AS
+    -> SELECT Iname, Iprice, Icount
+    -> FROM ITEMS
+    -> WHERE Itype = 'Stationary'
+    -> ORDER BY Iprice DESC;
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> SELECT * FROM View_Stationary;
++----------+--------+--------+
+| Iname    | Iprice | Icount |
++----------+--------+--------+
+| Notebook | 500.00 |     20 |
+| Stapler  | 250.00 |     30 |
+| Pen      |  50.00 |    100 |
+| Eraser   |  20.00 |     50 |
++----------+--------+--------+
+4 rows in set (0.00 sec)
