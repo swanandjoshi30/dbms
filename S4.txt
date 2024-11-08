@@ -1,0 +1,178 @@
+mysql> create database S4
+    -> ;
+Query OK, 1 row affected (0.01 sec)
+
+mysql> use S4
+Database changed
+mysql> CREATE TABLE Cust_Master (
+    ->     Cust_no VARCHAR(10) PRIMARY KEY,
+    ->     Cust_name VARCHAR(100) NOT NULL,
+    ->     Cust_addr VARCHAR(255) NOT NULL
+    -> );
+Query OK, 0 rows affected (0.04 sec)
+
+
+mysql> CREATE TABLE Orders (
+    ->     Order_no INT PRIMARY KEY,
+    ->     Cust_no VARCHAR(10),
+    ->     Order_date DATE,
+    ->     Qty_Ordered INT NOT NULL,
+    ->     FOREIGN KEY (Cust_no) REFERENCES Cust_Master(Cust_no)
+    -> );
+Query OK, 0 rows affected (0.04 sec)
+
+mysql> CREATE TABLE Product (
+    ->     Product_no INT PRIMARY KEY,
+    ->     Product_name VARCHAR(100) NOT NULL,
+    ->     Order_no INT,
+    ->     FOREIGN KEY (Order_no) REFERENCES Orders(Order_no)
+    -> );
+Query OK, 0 rows affected (0.04 sec)
+
+mysql> INSERT INTO Cust_Master (Cust_no, Cust_name, Cust_addr) VALUES
+    -> ('C1001', 'Alice', '123 Street, Bangalore'),
+    -> ('C1002', 'Bob', '456 Road, Mangalore'),
+    -> ('C1003', 'Charlie', '789 Lane, Mumbai'),
+    -> ('C1004', 'David', '101 Circle, Bangalore'),
+    -> ('C1005', 'Eva', '202 Boulevard, Mangalore'),
+    -> ('C1006', 'Frank', '303 Avenue, Chennai'),
+    -> ('C1007', 'Grace', '404 Drive, Bangalore'),
+    -> ('C1008', 'Hannah', '505 Path, Mangalore');
+Query OK, 8 rows affected (0.01 sec)
+Records: 8  Duplicates: 0  Warnings: 0
+
+
+mysql> INSERT INTO Orders (Order_no, Cust_no, Order_date, Qty_Ordered) VALUES
+    -> (1, 'C1001', '2024-10-01', 5),
+    -> (2, 'C1002', '2024-10-03', 3),
+    -> (3, 'C1003', '2024-10-05', 10),
+    -> (4, 'C1004', '2024-10-07', 2),
+    -> (5, 'C1005', '2024-10-09', 7),
+    -> (6, 'C1006', '2024-10-11', 4),
+    -> (7, 'C1007', '2024-10-13', 8),
+    -> (8, 'C1008', '2024-10-15', 6);
+Query OK, 8 rows affected (0.01 sec)
+Records: 8  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO Product (Product_no, Product_name, Order_no) VALUES
+    -> (101, 'Laptop', 1),
+    -> (102, 'Tablet', 2),
+    -> (103, 'Smartphone', 3),
+    -> (104, 'Smartwatch', 4),
+    -> (105, 'Headphones', 5),
+    -> (106, 'Monitor', 6),
+    -> (107, 'Keyboard', 7),
+    -> (108, 'Mouse', 8);
+Query OK, 8 rows affected (0.01 sec)
+Records: 8  Duplicates: 0  Warnings: 0
+
+mysql> select cust_name
+    -> from cust_master
+    -> where cust_name like "_A%";
++-----------+
+| cust_name |
++-----------+
+| David     |
+| Hannah    |
++-----------+
+2 rows in set (0.00 sec)
+
+mysql> select *
+    -> from orders
+    -> where cust_no IN('C1002','C1005','C1007','C1008');
++----------+---------+------------+-------------+
+| Order_no | Cust_no | Order_date | Qty_Ordered |
++----------+---------+------------+-------------+
+|        2 | C1002   | 2024-10-03 |           3 |
+|        5 | C1005   | 2024-10-09 |           7 |
+|        7 | C1007   | 2024-10-13 |           8 |
+|        8 | C1008   | 2024-10-15 |           6 |
++----------+---------+------------+-------------+
+4 rows in set (0.00 sec)
+
+
+mysql> select *
+    -> from cust_master
+    -> where cust_addr like "%Bangalore%" or cust_addr like "Mangalore";
++---------+-----------+-----------------------+
+| Cust_no | Cust_name | Cust_addr             |
++---------+-----------+-----------------------+
+| C1001   | Alice     | 123 Street, Bangalore |
+| C1004   | David     | 101 Circle, Bangalore |
+| C1007   | Grace     | 404 Drive, Bangalore  |
++---------+-----------+-----------------------+
+3 rows in set (0.00 sec)
+
+mysql> SELECT cm.Cust_name, p.Product_name
+    -> FROM Cust_Master cm
+    -> JOIN Orders o ON cm.Cust_no = o.Cust_no
+    -> JOIN Product p ON o.Order_no = p.Order_no;
++-----------+--------------+
+| Cust_name | Product_name |
++-----------+--------------+
+| Alice     | Laptop       |
+| Bob       | Tablet       |
+| Charlie   | Smartphone   |
+| David     | Smartwatch   |
+| Eva       | Headphones   |
+| Frank     | Monitor      |
+| Grace     | Keyboard     |
+| Hannah    | Mouse        |
++-----------+--------------+
+8 rows in set (0.00 sec)
+
+mysql> CREATE VIEW View1 AS
+    -> SELECT cm.Cust_name, p.Product_name
+    -> FROM Cust_Master cm
+    -> JOIN Orders o ON cm.Cust_no = o.Cust_no
+    -> JOIN Product p ON o.Order_no = p.Order_no;
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> SELECT cm.Cust_name, p.Product_name, o.Qty_Ordered
+    -> FROM Cust_Master cm
+    -> JOIN Orders o ON cm.Cust_no = o.Cust_no
+    -> JOIN Product p ON o.Order_no = p.Order_no;
++-----------+--------------+-------------+
+| Cust_name | Product_name | Qty_Ordered |
++-----------+--------------+-------------+
+| Alice     | Laptop       |           5 |
+| Bob       | Tablet       |           3 |
+| Charlie   | Smartphone   |          10 |
+| David     | Smartwatch   |           2 |
+| Eva       | Headphones   |           7 |
+| Frank     | Monitor      |           4 |
+| Grace     | Keyboard     |           8 |
+| Hannah    | Mouse        |           6 |
++-----------+--------------+-------------+
+8 rows in set (0.00 sec)
+
+
+SELECT cm.Cust_name, p.Product_name
+FROM Cust_Master cm
+INNER JOIN Orders o ON cm.Cust_no = o.Cust_no
+INNER JOIN Product p ON o.Order_no = p.Order_no;
+
+
+SELECT cm.Cust_name, p.Product_name
+FROM Cust_Master cm
+LEFT JOIN Orders o ON cm.Cust_no = o.Cust_no
+LEFT JOIN Product p ON o.Order_no = p.Order_no;
+
+
+SELECT cm.Cust_name, p.Product_name
+FROM Cust_Master cm
+RIGHT JOIN Orders o ON cm.Cust_no = o.Cust_no
+RIGHT JOIN Product p ON o.Order_no = p.Order_no;
+
+
+SELECT cm.Cust_name, p.Product_name
+FROM Cust_Master cm
+LEFT JOIN Orders o ON cm.Cust_no = o.Cust_no
+LEFT JOIN Product p ON o.Order_no = p.Order_no
+
+UNION
+
+SELECT cm.Cust_name, p.Product_name
+FROM Cust_Master cm
+RIGHT JOIN Orders o ON cm.Cust_no = o.Cust_no
+RIGHT JOIN Product p ON o.Order_no = p.Order_no;
