@@ -1,0 +1,186 @@
+mysql> use s2
+Database changed
+mysql> create table branch(
+    -> branch_name VARCHAR(30) PRIMARY KEY,
+    -> branch_city VARCHAR(20),
+    -> assts DECIMAL(10,2)
+    -> );
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> create table account(
+    -> acc_no INT PRIMARY KEY,
+    -> branch_name VARCHAR(30),
+    -> balance DECIMAL(10,2),
+    -> FOREIGN KEY(branch_name) REFERENCES branch(branch_name)
+    -> );
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> CREATE TABLE customer(
+    -> cust_name VARCHAR(30) PRIMARY KEY,
+    -> cust_street VARCHAR(30),
+    -> cust_city VARCHAR(30)
+    -> );
+Query OK, 0 rows affected (0.05 sec)
+
+mysql> CREATE TABLE depositor(
+    -> cust_name VARCHAR(30),
+    -> acc_no INT,
+    -> FOREIGN KEY(cust_name) REFERENCES customer(cust_name),
+    -> FOREIGN KEY(acc_no) REFERENCES account(acc_no)
+    -> );
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> CREATE TABLE loan(
+    -> loan_no VARCHAR(10) PRIMARY KEY,
+    -> branch_name VARCHAR(30),
+    -> amount DECIMAL(5,2)
+    -> ,^C
+mysql> CREATE TABLE loan(
+    -> loan_no VARCHAR(10) PRIMARY KEY,
+    -> branch_name VARCHAR(30),
+    -> amount DECIMAL(5,2),
+    -> FOREIGN KEY(branch_name) REFERENCES branch(branch_name)
+    -> );
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> CREATE TABLE borrower(
+    -> cust_name VARCHAR(30),
+    -> loan_no VARCHAR(10),
+    -> FOREIGN KEY(cust_name) REFERENCES customer(cust_name),
+    -> FOREIGN KEY(loan_no) REFERENCES loan(loan_no)
+    -> );
+Query OK, 0 rows affected (0.04 sec)
+
+
+mysql> INSERT INTO branch(branch_name,branch_city,assts)VALUES
+    -> ("Wadia College","Pune",5000000),
+    -> ("Deccan","Pune",4300000),
+    -> ("MG Road","Pune",3000000);
+Query OK, 3 rows affected (0.01 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO account(acc_no,branch_name,balance)VALUES
+    -> (101,"Wadia College","20000"),
+    -> (102,"Deccan",13000),
+    -> (103,"MG Road",22000),
+    -> (104,"Wadia College",30000);
+Query OK, 4 rows affected (0.01 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO Customer (cust_name, cust_street, cust_city) VALUES
+    -> ('John Doe', 'Kothrud', 'Pune'),
+    -> ('Jane Smith', 'Andheri', 'Mumbai'),
+    -> ('Sam Wilson', 'Aundh', 'Pune'),
+    -> ('Lisa Ray', 'Churchgate', 'Mumbai');
+Query OK, 4 rows affected (0.01 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO Depositor (cust_name, acc_no) VALUES
+    -> ('John Doe', 101),
+    -> ('Jane Smith', 102),
+    -> ('Sam Wilson', 103),
+    -> ('Lisa Ray', 104);
+Query OK, 4 rows affected (0.01 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+
+mysql> ALTER TABLE Loan MODIFY amount INT;
+Query OK, 0 rows affected (0.10 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO Loan (loan_no, branch_name, amount) VALUES
+    -> (201, 'Wadia College', 18000),
+    -> (202, 'Deccan', 12000),
+    -> (203, 'MG Road', 15000),
+    -> (204, 'Wadia College', 13000);
+Query OK, 4 rows affected (0.01 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO Borrower (cust_name, loan_no) VALUES
+    -> ('John Doe', 201),
+    -> ('Jane Smith', 202),
+    -> ('Sam Wilson', 203),
+    -> ('Lisa Ray', 204);
+Query OK, 4 rows affected (0.01 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+mysql> select distinct branch_name from loan;
++---------------+
+| branch_name   |
++---------------+
+| Deccan        |
+| MG Road       |
+| Wadia College |
++---------------+
+3 rows in set (0.00 sec)
+
+mysql> select loan_no from loan
+    -> where branch_name = "Wadia College"
+    -> AND amount > 12000;
++---------+
+| loan_no |
++---------+
+| 201     |
+| 204     |
++---------+
+2 rows in set (0.00 sec)
+
+mysql> select borrower.cust_name,loan.loan_no,loan.amount
+    -> from borrower
+    -> JOIN loan on borrower.loan_no = loan.loan_no;
++------------+---------+--------+
+| cust_name  | loan_no | amount |
++------------+---------+--------+
+| John Doe   | 201     |  18000 |
+| Jane Smith | 202     |  12000 |
+| Sam Wilson | 203     |  15000 |
+| Lisa Ray   | 204     |  13000 |
++------------+---------+--------+
+4 rows in set (0.00 sec)
+
+mysql> SELECT Customer.cust_name
+    -> FROM Customer
+    -> JOIN Borrower ON Customer.cust_name = Borrower.cust_name
+    -> JOIN Loan ON Borrower.loan_no = Loan.loan_no
+    -> WHERE Loan.branch_name = 'Wadia College'
+    -> ORDER BY Customer.cust_name;
++-----------+
+| cust_name |
++-----------+
+| John Doe  |
+| Lisa Ray  |
++-----------+
+2 rows in set (0.00 sec)
+
+mysql> select borrower.cust_name
+    -> from borrower
+    -> JOIN loan on borrower.loan_no = loan.loan_no
+    -> where loan.branch_name = "Wadia College"
+    -> order by borrower.cust_name;
++-----------+
+| cust_name |
++-----------+
+| John Doe  |
+| Lisa Ray  |
++-----------+
+2 rows in set (0.00 sec)
+
+mysql> select branch_city
+    -> from branch;
++-------------+
+| branch_city |
++-------------+
+| Pune        |
+| Pune        |
+| Pune        |
++-------------+
+3 rows in set (0.00 sec)
+
+mysql> select distinct branch_city
+    -> from branch;
++-------------+
+| branch_city |
++-------------+
+| Pune        |
++-------------+
+1 row in set (0.00 sec)

@@ -1,0 +1,49 @@
+mysql> select branch_name
+    -> from account
+    -> group by branch_name
+    -> having AVG(balance) > 15000;
++---------------+
+| branch_name   |
++---------------+
+| MG Road       |
+| Wadia College |
++---------------+
+2 rows in set (0.00 sec)
+
+mysql> select COUNT(*) from customer;
++----------+
+| COUNT(*) |
++----------+
+|        4 |
++----------+
+1 row in set (0.00 sec)
+
+mysql> select SUM(amount)
+    -> from loan;
++-------------+
+| SUM(amount) |
++-------------+
+|       58000 |
++-------------+
+1 row in set (0.00 sec)
+
+mysql> delete from loan
+    -> where amount between 1300 AND 1500;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> select branch_name,AVG(balance)
+    -> from account
+    -> GROUP BY branch_name;
++---------------+--------------+
+| branch_name   | AVG(balance) |
++---------------+--------------+
+| Deccan        | 13000.000000 |
+| MG Road       | 22000.000000 |
+| Wadia College | 25000.000000 |
++---------------+--------------+
+3 rows in set (0.00 sec)
+
+mysql> select cust_name,cust_city
+    -> from customer
+    -> where cust_name like "P%";
+Empty set (0.00 sec)

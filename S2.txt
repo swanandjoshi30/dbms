@@ -1,0 +1,91 @@
+mysql> SELECT DISTINCT Depositor.cust_name
+    -> FROM Depositor
+    -> JOIN Borrower ON Depositor.cust_name = Borrower.cust_name;
++------------+
+| cust_name  |
++------------+
+| Jane Smith |
+| John Doe   |
+| Lisa Ray   |
+| Sam Wilson |
++------------+
+4 rows in set (0.00 sec)
+
+mysql> select depositor.cust_name
+    ->
+    -> from depostor
+    -> ^C
+mysql> select depositor.cust_name
+    -> from depositor
+    -> JOIN borrower on depositor.cust_name = borrower.cust_name;
++------------+
+| cust_name  |
++------------+
+| Jane Smith |
+| John Doe   |
+| Lisa Ray   |
+| Sam Wilson |
++------------+
+4 rows in set (0.00 sec)
+
+
+mysql> select distinct cust_name from depositor
+    -> union
+    -> select distinct cust_name from borrower;
++------------+
+| cust_name  |
++------------+
+| Jane Smith |
+| John Doe   |
+| Lisa Ray   |
+| Sam Wilson |
++------------+
+4 rows in set (0.00 sec)
+
+
+mysql> select depositor.cust_name
+    -> from depositor
+    -> where depositor.cust_name NOT IN(select cust_name from borrower);
+Empty set (0.00 sec)
+
+mysql> select depositor.cust_name
+    -> from depositor
+    -> left JOIN borrower on depositor.cust_name = borrower.cust_name
+    -> where borrower.cust_name IS NULL;
+Empty set (0.00 sec)
+
+mysql> select branch_name,AVG(balance)
+    -> from account
+    -> where branch_name = "Wadia College";
++---------------+--------------+
+| branch_name   | AVG(balance) |
++---------------+--------------+
+| Wadia College | 25000.000000 |
++---------------+--------------+
+1 row in set (0.00 sec)
+
+
+mysql> select branch_name,count(distinct depositor.cust_name) as num_depo
+    -> from account
+    -> join depositor on depositor.acc_no = account.acc_no
+    -> group by branch_name;
++---------------+----------+
+| branch_name   | num_depo |
++---------------+----------+
+| Deccan        |        1 |
+| MG Road       |        1 |
+| Wadia College |        2 |
++---------------+----------+
+3 rows in set (0.00 sec)
+
+mysql> SELECT branch_name, COUNT(DISTINCT acc_no) AS num_depositors
+    -> FROM Account
+    -> GROUP BY branch_name;
++---------------+----------------+
+| branch_name   | num_depositors |
++---------------+----------------+
+| Deccan        |              1 |
+| MG Road       |              1 |
+| Wadia College |              2 |
++---------------+----------------+
+3 rows in set (0.00 sec)

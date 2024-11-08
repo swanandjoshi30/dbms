@@ -1,0 +1,117 @@
+
+mysql> CREATE VIEW View1 AS
+    -> SELECT DISTINCT C.cust_name
+    -> FROM Customer C
+    -> JOIN Borrower B ON C.cust_name = B.cust_name
+    -> JOIN Loan L ON B.loan_no = L.loan_no
+    -> WHERE L.branch_name = 'Pune_Station'
+    -> ORDER BY C.cust_name;
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> drop view view1;
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> create view view1 as
+    -> select b.cust_name
+    -> from borrower b
+    -> join loan l on b.loan_no = l.loan_no
+    -> where l.branch_name = "Wadia College"
+    -> ORDER BY b.cust_name;
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> select * from view1;
++-----------+
+| cust_name |
++-----------+
+| John Doe  |
+| Lisa Ray  |
++-----------+
+2 rows in set (0.00 sec)
+
+mysql> create view view2 as
+    -> select branch_name,branch_city
+    -> from branch;
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> insert into view2(branch_name,branch_city)VALUES('new_branch','new_city');
+Query OK, 1 row affected (0.01 sec)
+
+mysql> select * from view2;
++---------------+-------------+
+| branch_name   | branch_city |
++---------------+-------------+
+| Deccan        | Pune        |
+| MG Road       | Pune        |
+| new_branch    | new_city    |
+| Wadia College | Pune        |
++---------------+-------------+
+4 rows in set (0.00 sec)
+
+mysql> update view2
+    -> set branch_city = "updated"
+    -> where branch_name = "new_branch;"
+    -> ^X^C
+mysql> update view2
+    -> set branch_city = "updated"
+    -> where branch_name = "new_branch";
+Query OK, 1 row affected (0.01 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> delete from view2 where branch_name = "new_branch";
+Query OK, 1 row affected (0.03 sec)
+
+mysql> select * from view2;
++---------------+-------------+
+| branch_name   | branch_city |
++---------------+-------------+
+| Deccan        | Pune        |
+| MG Road       | Pune        |
+| Wadia College | Pune        |
++---------------+-------------+
+3 rows in set (0.00 sec)
+
+mysql> create view view3 as
+    -> select b.cust_name,d.acc_no
+    -> from borrower
+    -> b join depositor d ON b.cust_name = d.cust_name;
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> select * from view3;
++------------+--------+
+| cust_name  | acc_no |
++------------+--------+
+| Jane Smith |    102 |
+| John Doe   |    101 |
+| Lisa Ray   |    104 |
+| Sam Wilson |    103 |
++------------+--------+
+4 rows in set (0.00 sec)
+
+mysql> select b.ocust_name
+    -> from borrower b^C
+mysql> select b.cust_name
+    -> from borrower b
+    -> left join depositor d on b.cust_name = d.cust_name
+    -> UNION
+    -> select d.cust_name
+    -> from depositor d
+    -> RIGHT JOIN borrower b on d.cust_name=b.cust_name;
++------------+
+| cust_name  |
++------------+
+| Jane Smith |
+| John Doe   |
+| Lisa Ray   |
+| Sam Wilson |
++------------+
+4 rows in set (0.00 sec)
+
+mysql> create index idx on account(balance);
+Query OK, 0 rows affected (0.06 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> create unique index idx_unique ON account(acc_no);
+Query OK, 0 rows affected (0.05 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> show index from account;
