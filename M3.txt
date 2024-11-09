@@ -1,0 +1,130 @@
+db.employees.insertMany([
+  {
+    Emp_id: 101,
+    Name: { FName: "John", LName: "Doe" },
+    CompanyName: "Infosys",
+    Salary: 60000,
+    Designation: "Programmer",
+    Age: 30,
+    Expertise: ["Java", "MongoDB", "NodeJS"],
+    DOB: new Date("1994-03-15"),
+    EmailId: "john.doe@infosys.com",
+    Contact: "+911234567890",
+    Address: [{ PAddr: "Street 1", LAddr: "City, State" }]
+  },
+  {
+    Emp_id: 102,
+    Name: { FName: "Alice", LName: "Smith" },
+    CompanyName: "TCS",
+    Salary: 50000,
+    Designation: "Tester",
+    Age: 25,
+    Expertise: ["Selenium", "Java", "SQL"],
+    DOB: new Date("1998-07-10"),
+    EmailId: "alice.smith@tcs.com",
+    Contact: "+911234567891",
+    Address: [{ PAddr: "Street 2", LAddr: "Pune, Maharashtra" }]
+  },
+  {
+    Emp_id: 103,
+    Name: { FName: "Bob", LName: "Johnson" },
+    CompanyName: "TCS",
+    Salary: 55000,
+    Designation: "Developer",
+    Age: 27,
+    Expertise: ["Java", "Spring", "NodeJS"],
+    DOB: new Date("1996-01-25"),
+    EmailId: "bob.johnson@tcs.com",
+    Contact: "+911234567892",
+    Address: [{ PAddr: "Street 3", LAddr: "Mumbai, Maharashtra" }]
+  },
+  {
+    Emp_id: 104,
+    Name: { FName: "Charlie", LName: "Brown" },
+    CompanyName: "TCS",
+    Salary: 60000,
+    Designation: "Tester",
+    Age: 25,
+    Expertise: ["Manual Testing", "Automation", "SQL"],
+    DOB: new Date("1997-04-30"),
+    EmailId: "charlie.brown@tcs.com",
+    Contact: "+911234567893",
+    Address: [{ PAddr: "Street 4", LAddr: "Pune, Maharashtra" }]
+  },
+  {
+    Emp_id: 105,
+    Name: { FName: "Eve", LName: "Williams" },
+    CompanyName: "Wipro",
+    Salary: 70000,
+    Designation: "Manager",
+    Age: 32,
+    Expertise: ["Leadership", "Cloud", "Python"],
+    DOB: new Date("1992-11-15"),
+    EmailId: "eve.williams@wipro.com",
+    Contact: "+911234567894",
+    Address: [{ PAddr: "Street 5", LAddr: "Bangalore, Karnataka" }]
+  }
+]);
+
+
+
+db.employees.updateOne(
+  { Designation: "Tester", CompanyName: "TCS", Age: 25 },
+  { $setOnInsert: {
+    Emp_id: 106,
+    Name: { FName: "New", LName: "Employee" },
+    CompanyName: "TCS",
+    Salary: 40000,
+    Designation: "Tester",
+    Age: 25,
+    Expertise: ["Selenium", "Java"],
+    DOB: new Date("1998-07-10"),
+    EmailId: "newemployee@tcs.com",
+    Contact: "+911234567895",
+    Address: [{ PAddr: "Street 6", LAddr: "Pune, Maharashtra" }]
+  }},
+  { upsert: true }
+);
+
+
+
+db.employees.updateMany(
+  { CompanyName: "TCS" },
+  { $inc: { Salary: 2000 } }
+);
+
+
+
+db.employees.find({
+  "Address.LAddr": "Pune, Maharashtra",
+  "Address.PAddr": "411001"
+});
+
+
+
+db.employees.find({
+  Designation: { $in: ["Developer", "Tester"] }
+});
+
+
+
+db.employees.deleteOne({
+  Designation: "Developer"
+});
+
+
+
+db.employees.countDocuments();
+
+
+
+
+
+These are the MongoDB CRUD operations you need to perform on the employees collection:
+
+Use updateOne with upsert to create a document if it doesn't already exist.
+Use updateMany to increase salary for employees in a specific company.
+Use find to match documents based on embedded document fields (Address).
+Use find with $in to filter documents with specific Designation values.
+Use deleteOne to delete a document matching specific criteria.
+Use countDocuments to count the number of documents in a collection.
