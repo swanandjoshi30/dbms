@@ -1,0 +1,120 @@
+db.employees.insertMany([
+  {
+    Emp_id: 101,
+    Name: { FName: "John", LName: "Doe" },
+    CompanyName: "Infosys",
+    Salary: 60000,
+    Designation: "Programmer",
+    Age: 30,
+    Expertise: ["Java", "MongoDB", "NodeJS"],
+    DOB: new Date("1994-03-15"),
+    EmailId: "john.doe@infosys.com",
+    Contact: "+911234567890",
+    Address: [{ PAddr: "Street 1", LAddr: "City, State" }]
+  },
+  {
+    Emp_id: 102,
+    Name: { FName: "Swapnil", LName: "Jadhav" },
+    CompanyName: "TCS",
+    Salary: 80000,
+    Designation: "DBA",
+    Age: 35,
+    Expertise: ["SQL", "MongoDB", "Linux"],
+    DOB: new Date("1989-06-10"),
+    EmailId: "swapnil.jadhav@tcs.com",
+    Contact: "+911234567891",
+    Address: [{ PAddr: "Street 2", LAddr: "Pune, Maharashtra" }]
+  },
+  {
+    Emp_id: 103,
+    Name: { FName: "Alice", LName: "Smith" },
+    CompanyName: "Wipro",
+    Salary: 50000,
+    Designation: "Tester",
+    Age: 28,
+    Expertise: ["Java", "Selenium", "Automation"],
+    DOB: new Date("1996-08-20"),
+    EmailId: "alice.smith@wipro.com",
+    Contact: "+911234567892",
+    Address: [{ PAddr: "Street 3", LAddr: "Bangalore, Karnataka" }]
+  },
+  {
+    Emp_id: 104,
+    Name: { FName: "Bob", LName: "Johnson" },
+    CompanyName: "TCS",
+    Salary: 75000,
+    Designation: "DBA",
+    Age: 40,
+    Expertise: ["SQL", "Oracle", "Linux"],
+    DOB: new Date("1984-12-10"),
+    EmailId: "bob.johnson@tcs.com",
+    Contact: "+911234567893",
+    Address: [{ PAddr: "Street 4", LAddr: "Pune, Maharashtra" }]
+  },
+  {
+    Emp_id: 105,
+    Name: { FName: "Eve", LName: "Williams" },
+    CompanyName: "Infosys",
+    Salary: 70000,
+    Designation: "Manager",
+    Age: 30,
+    Expertise: ["Python", "Cloud", "Leadership"],
+    DOB: new Date("1994-05-15"),
+    EmailId: "eve.williams@infosys.com",
+    Contact: "+911234567894",
+    Address: [{ PAddr: "Street 5", LAddr: "Hyderabad, Telangana" }]
+  }
+]);
+
+
+
+db.employees.aggregate([
+  { $unwind: "$Expertise" },
+  { $group: { _id: "$Expertise", total: { $sum: 1 } } },
+  { $sort: { total: -1 } }
+]);
+
+
+
+db.employees.aggregate([
+  { $group: { _id: "$CompanyName", maxSalary: { $max: "$Salary" }, minSalary: { $min: "$Salary" } } }
+]);
+
+
+
+db.employees.aggregate([
+  { $match: { Designation: "DBA" } },
+  { $group: { _id: "$Address.LAddr", totalSalary: { $sum: "$Salary" } } }
+]);
+
+
+
+db.employees.aggregate([
+  { $match: { "Name.FName": "Swapnil", "Name.LName": "Jadhav" } },
+  { $unwind: "$Expertise" },
+  { $project: { _id: 0, Expertise: 1 } }
+]);
+
+
+
+db.employees.createIndex({ "Name.FName": 1, "Age": -1 });
+
+
+// Measure search time without an index
+var start = new Date();
+db.employees.find({ Emp_id: 101 }).toArray();
+var end = new Date();
+print("Search Time without Index: " + (end - start) + "ms");
+
+// Create an index on Emp_id field
+db.employees.createIndex({ Emp_id: 1 });
+
+// Measure search time with an index
+start = new Date();
+db.employees.find({ Emp_id: 101 }).toArray();
+end = new Date();
+print("Search Time with Index: " + (end - start) + "ms");
+
+
+
+db.employees.getIndexes();

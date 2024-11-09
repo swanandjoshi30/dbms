@@ -1,0 +1,131 @@
+use companyDB  // Switch to your desired database
+
+db.createCollection("employees")
+
+db.employees.insertMany([
+  {
+    Emp_id: 1,
+    Name: { FName: "John", LName: "Doe" },
+    CompanyName: "Infosys",
+    Salary: 100000,
+    Designation: "Programmer",
+    Age: 30,
+    Expertise: ["Java", "MongoDB", "NodeJS"],
+    DOB: new Date("1994-03-15"),
+    EmailId: "john.doe@infosys.com",
+    Contact: "+911234567890",
+    Address: [{ PAddr: "Street 1", LAddr: "City, State" }]
+  },
+  {
+    Emp_id: 2,
+    Name: { FName: "Alice", LName: "Smith" },
+    CompanyName: "TCS",
+    Salary: 90000,
+    Designation: "DBA",
+    Age: 35,
+    Expertise: ["SQL", "MongoDB", "Oracle"],
+    DOB: new Date("1989-07-10"),
+    EmailId: "alice.smith@tcs.com",
+    Contact: "+911234567891",
+    Address: [{ PAddr: "Street 2", LAddr: "Pune, Maharashtra" }]
+  },
+  {
+    Emp_id: 3,
+    Name: { FName: "Bob", LName: "Johnson" },
+    CompanyName: "Wipro",
+    Salary: 120000,
+    Designation: "Manager",
+    Age: 40,
+    Expertise: ["Python", "Leadership", "Cloud"],
+    DOB: new Date("1983-02-20"),
+    EmailId: "bob.johnson@wipro.com",
+    Contact: "+911234567892",
+    Address: [{ PAddr: "Street 3", LAddr: "Bangalore, Karnataka" }]
+  },
+  {
+    Emp_id: 4,
+    Name: { FName: "Eve", LName: "Williams" },
+    CompanyName: "Infosys",
+    Salary: 80000,
+    Designation: "DBA",
+    Age: 28,
+    Expertise: ["SQL", "MongoDB", "Azure"],
+    DOB: new Date("1995-10-12"),
+    EmailId: "eve.williams@infosys.com",
+    Contact: "+911234567893",
+    Address: [{ PAddr: "Street 4", LAddr: "Pune, Maharashtra" }]
+  },
+  {
+    Emp_id: 5,
+    Name: { FName: "Charlie", LName: "Brown" },
+    CompanyName: "TCS",
+    Salary: 150000,
+    Designation: "Programmer",
+    Age: 32,
+    Expertise: ["Java", "C#", "SQL"],
+    DOB: new Date("1991-05-05"),
+    EmailId: "charlie.brown@tcs.com",
+    Contact: "+911234567894",
+    Address: [{ PAddr: "Street 5", LAddr: "Mumbai, Maharashtra" }]
+  }
+]);
+
+
+db.employees.aggregate([
+  { 
+    $group: { 
+      _id: "$Designation", 
+      totalSalary: { $sum: "$Salary" } 
+    }
+  },
+  {
+    $match: { totalSalary: { $gt: 200000 } }
+  }
+]);
+
+
+db.employees.aggregate([
+  { 
+    $project: {
+      _id: 1,
+      "Name.FName": { $toUpper: "$Name.FName" },
+      "Name.LName": { $toUpper: "$Name.LName" }
+    }
+  },
+  { $sort: { "Name.FName": 1, "Name.LName": 1 } }
+]);
+
+
+db.employees.aggregate([
+  { $match: { Designation: "DBA" } },
+  { 
+    $group: {
+      _id: "$Address.LAddr",
+      totalSalary: { $sum: "$Salary" }
+    }
+  }
+]);
+
+
+db.employees.createIndex({ Designation: 1 });
+
+
+db.employees.createIndex({ Expertise: 1 });
+
+
+
+
+let start = new Date();
+db.employees.find({ Emp_id: 3 });
+let end = new Date();
+print("Time taken without index: " + (end - start) + "ms");
+
+db.employees.createIndex({ Emp_id: 1 });
+
+start = new Date();
+db.employees.find({ Emp_id: 3 });
+end = new Date();
+print("Time taken with index: " + (end - start) + "ms");
+
+
+db.employees.getIndexes();
