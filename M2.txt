@@ -1,0 +1,108 @@
+db.employees.insertMany([
+  {
+    Name: { FName: "John", LName: "Doe" },
+    CompanyName: "Infosys",
+    Salary: 50000,
+    Designation: "Programmer",
+    Age: 30,
+    Expertise: ["MongoDB", "Java", "NodeJS"],
+    DOB: new Date("1994-03-15"),
+    EmailId: "john.doe@infosys.com",
+    Contact: "+911234567890",
+    Address: [{ PAddr: "Street 1", LAddr: "City, State" }]
+  },
+  {
+    Name: { FName: "Alice", LName: "Smith" },
+    CompanyName: "TCS",
+    Salary: 45000,
+    Designation: "Tester",
+    Age: 25,
+    Expertise: ["Java", "Selenium", "SQL"],
+    DOB: new Date("1998-07-10"),
+    EmailId: "alice.smith@tcs.com",
+    Contact: "+911234567891",
+    Address: [{ PAddr: "Street 2", LAddr: "City, State" }]
+  },
+  {
+    Name: { FName: "Bob", LName: "Johnson" },
+    CompanyName: "Infosys",
+    Salary: 60000,
+    Designation: "Manager",
+    Age: 35,
+    Expertise: ["Python", "Leadership", "Cloud"],
+    DOB: new Date("1988-02-20"),
+    EmailId: "bob.johnson@infosys.com",
+    Contact: "+911234567892",
+    Address: [{ PAddr: "Street 3", LAddr: "City, State" }]
+  },
+  {
+    Name: { FName: "Eve", LName: "Williams" },
+    CompanyName: "TCS",
+    Salary: 70000,
+    Designation: "Programmer",
+    Age: 28,
+    Expertise: ["C#", "SQL", "Azure"],
+    DOB: new Date("1996-10-12"),
+    EmailId: "eve.williams@tcs.com",
+    Contact: "+911234567893",
+    Address: [{ PAddr: "Street 4", LAddr: "City, State" }]
+  },
+  {
+    Name: { FName: "Charlie", LName: "Brown" },
+    CompanyName: "Wipro",
+    Salary: 30000,
+    Designation: "Tester",
+    Age: 32,
+    Expertise: ["Manual Testing", "Automation", "SQL"],
+    DOB: new Date("1992-05-05"),
+    EmailId: "charlie.brown@wipro.com",
+    Contact: "+911234567894",
+    Address: [{ PAddr: "Street 5", LAddr: "City, State" }]
+  }
+]);
+
+
+db.employees.find(
+  { Age: { $lt: 30 }, Salary: { $gt: 50000 } },
+  { "Name.FName": 1, "Name.LName": 1, _id: 0 }
+)
+
+
+db.employees.updateOne(
+  { Designation: "Tester", CompanyName: "TCS", Age: 25 },
+  { $setOnInsert: {
+    Name: { FName: "New", LName: "Employee" },
+    CompanyName: "TCS",
+    Salary: 40000,
+    Designation: "Tester",
+    Age: 25,
+    Expertise: ["Selenium", "Java"],
+    DOB: new Date("1998-07-10"),
+    EmailId: "newemployee@tcs.com",
+    Contact: "+911234567895",
+    Address: [{ PAddr: "Street 6", LAddr: "City, State" }]
+  }},
+  { upsert: true }
+)
+
+
+db.employees.find(
+  { $or: [{ Age: { $lt: 30 } }, { Salary: { $gt: 40000 } }] }
+)
+
+
+db.employees.find(
+  { Designation: { $ne: "Developer" } }
+)
+
+
+db.employees.find(
+  { CompanyName: "Infosys" },
+  { _id: 1, Designation: 1, Address: 1, Name: 1 }
+)
+
+
+db.employees.find(
+  {},
+  { "Name.FName": 1, "Name.LName": 1, _id: 0 }
+)
