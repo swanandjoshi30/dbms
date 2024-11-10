@@ -1,0 +1,50 @@
+-- Drop table if it exists
+DROP TABLE CUSTOMERS PURGE;
+
+-- Create CUSTOMERS table
+CREATE TABLE CUSTOMERS (
+    customer_id NUMBER PRIMARY KEY,
+    customer_name VARCHAR2(50),
+    salary NUMBER
+);
+
+-- Insert sample data into CUSTOMERS
+INSERT INTO CUSTOMERS VALUES (1, 'Tom', 2000);
+INSERT INTO CUSTOMERS VALUES (2, 'Jerry', 3000);
+INSERT INTO CUSTOMERS VALUES (3, 'Spike', 4000);
+
+COMMIT;
+
+
+
+SET SERVEROUTPUT ON;
+
+CREATE OR REPLACE TRIGGER trg_salary_difference
+AFTER INSERT OR UPDATE OR DELETE ON CUSTOMERS
+FOR EACH ROW
+BEGIN
+    IF UPDATING THEN
+        DBMS_OUTPUT.PUT_LINE('Salary difference: ' || (:NEW.salary - :OLD.salary));
+    ELSIF INSERTING THEN
+        DBMS_OUTPUT.PUT_LINE('New employee inserted with salary: ' || :NEW.salary);
+    ELSIF DELETING THEN
+        DBMS_OUTPUT.PUT_LINE('Employee deleted with salary: ' || :OLD.salary);
+    END IF;
+END;
+/
+
+
+
+SET SERVEROUTPUT ON;
+
+
+-- Insert a new record; this will display the salary of the newly inserted customer
+INSERT INTO CUSTOMERS (customer_id, customer_name, salary) VALUES (4, 'Jerry', 3500);
+
+
+-- Update the salary for an existing record; this will display the salary difference
+UPDATE CUSTOMERS SET salary = 3700 WHERE customer_id = 4;
+
+
+-- Delete a record; this will display the salary of the deleted customer
+DELETE FROM CUSTOMERS WHERE customer_id = 4;
