@@ -1,0 +1,33 @@
+-- Drop the areas table if it already exists
+DROP TABLE areas PURGE;
+
+-- Create the areas table with radius and area columns
+CREATE TABLE areas (
+    radius NUMBER,
+    area NUMBER
+);
+
+
+
+DECLARE
+    radius NUMBER;
+    area NUMBER;
+    pi CONSTANT NUMBER := 3.14159; -- Define constant value of Pi
+BEGIN
+    -- Loop through radius values from 5 to 9
+    FOR radius IN 5..9 LOOP
+        -- Calculate the area of the circle
+        area := pi * radius * radius;
+
+        -- Insert radius and area into areas table
+        INSERT INTO areas (radius, area) VALUES (radius, area);
+    END LOOP;
+
+    -- Commit the transaction to save the changes
+    COMMIT;
+END;
+/
+
+
+
+SELECT * FROM areas;
