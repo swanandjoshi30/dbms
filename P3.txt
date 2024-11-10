@@ -1,0 +1,46 @@
+-- Drop tables if they already exist
+DROP TABLE N_RollCall PURGE;
+DROP TABLE O_RollCall PURGE;
+
+-- Create N_RollCall
+CREATE TABLE N_RollCall (
+    roll_no NUMBER PRIMARY KEY,
+    student_name VARCHAR2(50),
+    attendance NUMBER
+);
+
+-- Create O_RollCall
+CREATE TABLE O_RollCall (
+    roll_no NUMBER PRIMARY KEY,
+    student_name VARCHAR2(50),
+    attendance NUMBER
+);
+
+-- Insert sample data into N_RollCall
+INSERT INTO N_RollCall VALUES (1, 'Alice', 80);
+INSERT INTO N_RollCall VALUES (2, 'Bob', 85);
+INSERT INTO N_RollCall VALUES (3, 'Charlie', 90);
+
+-- Insert sample data into O_RollCall with a duplicate record
+INSERT INTO O_RollCall VALUES (1, 'Alice', 80);
+INSERT INTO O_RollCall VALUES (4, 'David', 70);
+
+COMMIT;
+
+
+
+DECLARE
+    CURSOR roll_call_cursor IS
+        SELECT * FROM N_RollCall
+        WHERE roll_no NOT IN (SELECT roll_no FROM O_RollCall);
+BEGIN
+    FOR record IN roll_call_cursor LOOP
+        INSERT INTO O_RollCall (roll_no, student_name, attendance)
+        VALUES (record.roll_no, record.student_name, record.attendance);
+    END LOOP;
+END;
+/
+
+
+
+SELECT * FROM O_RollCall;
