@@ -1,0 +1,73 @@
+-- Drop and recreate Library table
+DROP TABLE Library PURGE;
+
+CREATE TABLE Library (
+    book_id NUMBER PRIMARY KEY,
+    title VARCHAR2(100),
+    author VARCHAR2(100),
+    publication_year NUMBER,
+    status VARCHAR2(20)  -- e.g., "Available", "Checked Out"
+);
+
+-- Insert sample data into Library
+INSERT INTO Library VALUES (1, 'The Great Gatsby', 'F. Scott Fitzgerald', 1925, 'Available');
+INSERT INTO Library VALUES (2, '1984', 'George Orwell', 1949, 'Available');
+INSERT INTO Library VALUES (3, 'To Kill a Mockingbird', 'Harper Lee', 1960, 'Checked Out');
+
+COMMIT;
+
+-- Drop and recreate Library_Audit table
+DROP TABLE Library_Audit PURGE;
+
+CREATE TABLE Library_Audit (
+    audit_id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    book_id NUMBER,
+    title VARCHAR2(100),
+    author VARCHAR2(100),
+    publication_year NUMBER,
+    status VARCHAR2(20),
+    operation_type VARCHAR2(10), -- "UPDATE" or "DELETE"
+    operation_date DATE DEFAULT SYSDATE
+);
+
+
+
+CREATE OR REPLACE TRIGGER trg_before_library
+BEFORE UPDATE OR DELETE ON Library
+FOR EACH ROW
+BEGIN
+    IF UPDATING THEN
+        -- Insert old values into Library_Audit table before update
+        INSERT INTO Library_Audit (book_id, title, author, publication_year, status, operation_type)
+        VALUES (:OLD.book_id, :OLD.title, :OLD.author, :OLD.publication_year, :OLD.status, 'UPDATE');
+    ELSIF DELETING THEN
+        -- Insert old values into Library_Audit table before delete
+        INSERT INTO Library_Audit (book_id, title, author, publication_year, status, operation_type)
+        VALUES (:OLD.book_id, :OLD.title, :OLD.author, :OLD.publication_year, :OLD.status, 'DELETE');
+    END IF;
+END;
+/
+
+
+
+CREATE OR REPLACE TRIGGER trg_after_library
+AFTER UPDATE OR DELETE ON Library
+FOR EACH ROW
+BEGIN
+    IF UPDATING THEN
+        DBMS_OUTPUT.PUT_LINE('Row updated in Library table with book_id: ' || :NEW.book_id);
+    ELSIF DELETING THEN
+        DBMS_OUTPUT.PUT_LINE('Row deleted from Library table with book_id: ' || :OLD.book_id);
+    END IF;
+END;
+/
+
+
+
+SET SERVEROUTPUT ON;
+
+UPDATE Library SET status = 'Checked Out' WHERE book_id = 1;
+
+DELETE FROM Library WHERE book_id = 2;
+
+SELECT * FROM Library_Audit;
