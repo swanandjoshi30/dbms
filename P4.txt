@@ -1,0 +1,46 @@
+-- Drop table if it exists
+DROP TABLE Student PURGE;
+
+-- Create Student table
+CREATE TABLE Student (
+    roll NUMBER PRIMARY KEY,
+    name VARCHAR2(50),
+    attendance NUMBER,
+    status VARCHAR2(20)
+);
+
+-- Insert sample data into Student
+INSERT INTO Student VALUES (1, 'John', 60, NULL);
+INSERT INTO Student VALUES (2, 'Jane', 80, NULL);
+INSERT INTO Student VALUES (3, 'Mike', 50, NULL);
+INSERT INTO Student VALUES (4, 'Sara', 90, NULL);
+
+COMMIT;
+
+
+
+DECLARE
+    student_roll NUMBER := &ROLL_NO;
+    student_attendance NUMBER;
+BEGIN
+    SELECT attendance INTO student_attendance FROM Student WHERE roll = student_roll;
+
+    IF student_attendance < 75 THEN
+        DBMS_OUTPUT.PUT_LINE('Term not granted');
+        UPDATE Student SET status = 'Detained' WHERE roll = student_roll;
+    ELSE
+        DBMS_OUTPUT.PUT_LINE('Term granted');
+        UPDATE Student SET status = 'Not Detained' WHERE roll = student_roll;
+    END IF;
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        DBMS_OUTPUT.PUT_LINE('No student found with this roll number');
+END;
+/
+
+
+
+SET SERVEROUTPUT ON;
+
+
+SELECT * FROM stud;
