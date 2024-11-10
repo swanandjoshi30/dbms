@@ -1,0 +1,44 @@
+-- Drop tables if they already exist
+DROP TABLE emp PURGE;
+DROP TABLE increment_salary PURGE;
+
+-- Create emp and increment_salary tables
+CREATE TABLE emp (
+    emp_no NUMBER PRIMARY KEY,
+    salary NUMBER
+);
+
+CREATE TABLE increment_salary (
+    emp_no NUMBER,
+    salary NUMBER
+);
+
+-- Insert sample data into emp
+INSERT INTO emp VALUES (1, 2000);
+INSERT INTO emp VALUES (2, 3000);
+INSERT INTO emp VALUES (3, 2500);
+INSERT INTO emp VALUES (4, 1500);
+INSERT INTO emp VALUES (5, 1800);
+
+COMMIT;
+
+
+
+DECLARE
+    avg_salary NUMBER;
+BEGIN
+    SELECT AVG(salary) INTO avg_salary FROM emp;
+
+    FOR rec IN (SELECT emp_no, salary FROM emp WHERE salary < avg_salary) LOOP
+        UPDATE emp
+        SET salary = salary * 1.1
+        WHERE emp_no = rec.emp_no;
+
+        INSERT INTO increment_salary (emp_no, salary) VALUES (rec.emp_no, rec.salary * 1.1);
+    END LOOP;
+END;
+/
+
+
+
+SELECT * FROM increment_salary;
