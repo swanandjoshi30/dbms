@@ -1,0 +1,58 @@
+-- Drop tables if they already exist
+DROP TABLE Stud_Marks PURGE;
+DROP TABLE Result PURGE;
+
+-- Create Stud_Marks and Result tables
+CREATE TABLE Stud_Marks (
+    name VARCHAR2(50),
+    total_marks NUMBER
+);
+
+CREATE TABLE Result (
+    roll NUMBER PRIMARY KEY,
+    name VARCHAR2(50),
+    class VARCHAR2(20)
+);
+
+-- Sequence for roll numbers in Result table
+CREATE SEQUENCE SEQ_ROLL START WITH 1;
+
+-- Insert sample data into Stud_Marks
+INSERT INTO Stud_Marks VALUES ('Alice', 1000);
+INSERT INTO Stud_Marks VALUES ('Bob', 950);
+INSERT INTO Stud_Marks VALUES ('Charlie', 880);
+INSERT INTO Stud_Marks VALUES ('David', 820);
+
+COMMIT;
+
+
+
+CREATE OR REPLACE PROCEDURE proc_Grade (p_name VARCHAR2, p_total_marks NUMBER) AS
+    v_class VARCHAR2(20);
+BEGIN
+    IF p_total_marks >= 900 THEN
+        v_class := 'First Class';
+    ELSIF p_total_marks >= 800 THEN
+        v_class := 'Second Class';
+    ELSE
+        v_class := 'Third Class';
+    END IF;
+
+    INSERT INTO Result (roll, name, class)
+    VALUES (SEQ_ROLL.NEXTVAL, p_name, v_class);
+END;
+/
+
+-- Test Procedure for each student
+BEGIN
+    proc_Grade('Alice', 1000);
+    proc_Grade('Bob', 950);
+    proc_Grade('Charlie', 880);
+    proc_Grade('David', 820);
+END;
+/
+
+
+
+-- Verify categorization in Result table
+SELECT * FROM Result;
